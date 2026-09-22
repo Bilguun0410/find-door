@@ -1,9 +1,10 @@
-const MAX_DOORS = 3000; // keep the grid small enough to draw
+import { createViz } from "./viz3d.js";
+
+const MAX_DOORS = 20000; // keep the scene small enough to draw smoothly
 
 const form = document.getElementById("form");
 const res = document.getElementById("res");
 const player = document.getElementById("player");
-const building = document.getElementById("building");
 const playBtn = document.getElementById("playBtn");
 const stepBtn = document.getElementById("stepBtn");
 const finishBtn = document.getElementById("finishBtn");
@@ -12,7 +13,9 @@ const speed = document.getElementById("speed");
 
 const $ = (id) => document.getElementById(id);
 
-let state = null; // { M, O, K, N, steps, cells, prev, done }
+const viz = createViz($("scene"));
+
+let state = null; // { B, M, O, K, N, steps, done }
 let timer = null;
 
 /**
@@ -25,68 +28,34 @@ function parseNumber(str) {
 }
 
 /**
- * Walks the building exactly like the original nested loop,
+ * Walks every building exactly like the 4-level nested loop,
  * pausing (yield) after every door so we can draw each step.
  */
-function* walkDoors(M, O, K, N) {
+function* walkDoors(B, M, O, K, N) {
   let result = 0;
-  for (let entrance = 1; entrance <= M; entrance++) {
-    for (let floor = 1; floor <= O; floor++) {
-      for (let door = 1; door <= K; door++) {
-        result++;
-        yield { entrance, floor, door, result, found: result === N };
-        if (result === N) return;
+  for (let building = 1; building <= B; building++) {
+    for (let entrance = 1; entrance <= M; entrance++) {
+      for (let floor = 1; floor <= O; floor++) {
+        for (let door = 1; door <= K; door++) {
+          result++;
+          yield { building, entrance, floor, door, result, found: result === N };
+          if (result === N) return;
+        }
       }
     }
   }
 }
 
-function drawBuilding(M, O, K) {
-  building.innerHTML = "";
-  const cells = [];
-
-  for (let e = 1; e <= M; e++) {
-    const block = document.createElement("div");
-    block.className = "entrance";
-    block.innerHTML = `<h3>${e}-р орц</h3>`;
-
-    const floors = document.createElement("div");
-    floors.className = "floors";
-    floors.style.setProperty("--doors", K);
-
-    // Top floor first so floor 1 sits at the bottom, like a real building.
-    for (let f = O; f >= 1; f--) {
-      const label = document.createElement("span");
-      label.className = "floor-label";
-      label.textContent = f;
-      floors.append(label);
-
-      for (let d = 1; d <= K; d++) {
-        const n = (e - 1) * O * K + (f - 1) * K + d;
-        const cell = document.createElement("span");
-        cell.className = "door";
-        cell.textContent = n;
-        cell.title = `${e}-р орц, ${f}-р давхар, ${d}-р хаалга`;
-        cells[n] = cell;
-        floors.append(cell);
-      }
-    }
-
-    block.append(floors);
-    building.append(block);
-  }
-  return cells;
+function where({ building, entrance, floor, door }) {
+  return `${building}-р байр, ${entrance}-р орц, ${floor}-р давхар, ${door}-р хаалга`;
 }
 
 function renderStep(step) {
-  const { entrance, floor, door, result, found } = step;
+  const { building, entrance, floor, door, result, found } = step;
 
-  if (state.prev) state.prev.classList.replace("current", "visited");
-  const cell = state.cells[result];
-  cell.classList.add(found ? "found" : "current");
-  cell.scrollIntoView({ block: "nearest", inline: "nearest" });
-  state.prev = found ? null : cell;
+  viz.visit(result, found);
 
+  $("vBl").textContent = `building = ${building}`;
   $("vE").textContent = `entrance = ${entrance}`;
   $("vF").textContent = `floor = ${floor}`;
   $("vD").textContent = `door = ${door}`;
@@ -95,9 +64,7 @@ function renderStep(step) {
   document.querySelector('[data-line="check"]').classList.toggle("hit", found);
 
   res.className = found ? "success" : "";
-  res.textContent = found
-    ? `Олдлоо! ${entrance}-р орц, ${floor}-р давхар, ${door}-р хаалга.`
-    : `Алхам ${result}: ${entrance}-р орц, ${floor}-р давхар, ${door}-р хаалга`;
+  res.textContent = found ? `Олдлоо! ${where(step)}.` : `Алхам ${result}: ${where(step)}`;
 }
 
 function nextStep() {
@@ -137,28 +104,25 @@ function stop() {
   playBtn.textContent = "▶ Тоглуулах";
 }
 
-function start(M, O, K, N) {
+function start(B, M, O, K, N) {
   stop();
-  state = {
-    M, O, K, N,
-    steps: walkDoors(M, O, K, N),
-    cells: drawBuilding(M, O, K),
-    prev: null,
-    done: false,
-  };
+  // Show the player first so the scene container has a size when it's built.
+  player.hidden = false;
+  viz.build(B, M, O, K);
+  state = { B, M, O, K, N, steps: walkDoors(B, M, O, K, N), done: false };
 
+  $("vB").textContent = B;
   $("vM").textContent = M;
   $("vO").textContent = O;
   $("vK").textContent = K;
   $("vN").textContent = N;
-  for (const id of ["vE", "vF", "vD", "vC"]) $(id).textContent = "–";
+  for (const id of ["vBl", "vE", "vF", "vD", "vC"]) $(id).textContent = "–";
   $("vR").textContent = "result = 0";
   document.querySelector('[data-line="check"]').classList.remove("hit");
 
   playBtn.disabled = stepBtn.disabled = finishBtn.disabled = false;
   res.className = "";
-  res.textContent = `Нийт ${M * O * K} хаалга. ${N}-р тоотыг хайж байна…`;
-  player.hidden = false;
+  res.textContent = `Нийт ${B * M * O * K} хаалга. ${N}-р тоотыг хайж байна…`;
 }
 
 function showError(message) {
@@ -171,16 +135,17 @@ function showError(message) {
 form.addEventListener("submit", (event) => {
   event.preventDefault();
 
+  const B = parseNumber($("B").value);
   const M = parseNumber($("M").value);
   const O = parseNumber($("O").value);
   const K = parseNumber($("K").value);
   const N = parseNumber($("N").value);
 
-  if (![M, O, K, N].every((x) => Number.isInteger(x) && x > 0)) {
+  if (![B, M, O, K, N].every((x) => Number.isInteger(x) && x > 0)) {
     return showError("Бүх утга 1-ээс их бүхэл тоо байх ёстой.");
   }
 
-  const allDoors = M * O * K;
+  const allDoors = B * M * O * K;
   if (allDoors > MAX_DOORS) {
     return showError(`Хэт том байна (${allDoors} хаалга). ${MAX_DOORS}-аас бага байлгана уу.`);
   }
@@ -188,7 +153,7 @@ form.addEventListener("submit", (event) => {
     return showError(`Таны хайсан тоот олдсонгүй (нийт ${allDoors} хаалга).`);
   }
 
-  start(M, O, K, N);
+  start(B, M, O, K, N);
   play();
 });
 
@@ -205,5 +170,5 @@ finishBtn.addEventListener("click", () => {
 });
 
 resetBtn.addEventListener("click", () => {
-  if (state) start(state.M, state.O, state.K, state.N);
+  if (state) start(state.B, state.M, state.O, state.K, state.N);
 });

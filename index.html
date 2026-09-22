@@ -12,6 +12,10 @@
         <fieldset>
           <legend>Find Address</legend>
           <span>
+            <label for="B">Нийт байр</label>
+            <input id="B" type="text" inputmode="numeric" placeholder="Enter number" value="2" />
+          </span>
+          <span>
             <label for="M">Нийт орц</label>
             <input id="M" type="text" inputmode="numeric" placeholder="Enter number" value="3" />
           </span>
@@ -25,7 +29,7 @@
           </span>
           <span>
             <label for="N">Хайх тоот</label>
-            <input id="N" type="text" inputmode="numeric" placeholder="Enter number" value="24" />
+            <input id="N" type="text" inputmode="numeric" placeholder="Enter number" value="84" />
           </span>
           <button type="submit">Бодох</button>
         </fieldset>
@@ -46,21 +50,31 @@
         <div class="stage">
           <pre
             class="code"
-          ><code><span data-line="outer">for (let <b>entrance</b> = 1; entrance &lt;= <i id="vM">M</i>; entrance++) {   <em id="vE">–</em></span>
-<span data-line="middle">  for (let <b>floor</b> = 1; floor &lt;= <i id="vO">O</i>; floor++) {        <em id="vF">–</em></span>
-<span data-line="inner">    for (let <b>door</b> = 1; door &lt;= <i id="vK">K</i>; door++) {        <em id="vD">–</em></span>
-<span data-line="count">      result++;                                   <em id="vR">0</em></span>
-<span data-line="check">      if (result === <i id="vN">N</i>) return;              <em id="vC"></em></span>
+          ><code><span data-line="building">for (let <b>building</b> = 1; building &lt;= <i id="vB">B</i>; building++) {  <em id="vBl">–</em></span>
+<span data-line="entrance">  for (let <b>entrance</b> = 1; entrance &lt;= <i id="vM">M</i>; entrance++) {   <em id="vE">–</em></span>
+<span data-line="floor">    for (let <b>floor</b> = 1; floor &lt;= <i id="vO">O</i>; floor++) {        <em id="vF">–</em></span>
+<span data-line="door">      for (let <b>door</b> = 1; door &lt;= <i id="vK">K</i>; door++) {        <em id="vD">–</em></span>
+<span data-line="count">        result++;                                     <em id="vR">0</em></span>
+<span data-line="check">        if (result === <i id="vN">N</i>) return;                <em id="vC"></em></span>
+      }
     }
   }
 }</code></pre>
 
-          <div id="building" class="building"></div>
+          <div id="scene" class="scene"></div>
         </div>
       </section>
 
       <div id="res" role="status"></div>
     </main>
-    <script src="index.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="index.js"></script>
   </body>
 </html>

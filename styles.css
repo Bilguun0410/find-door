@@ -8,6 +8,7 @@
   --text: #1d2424;
   --muted: #6b7777;
   --border: #d5dcdc;
+  --door: #e4e9e9;
   --accent: teal;
   --visited: #cfe9e7;
   --current: #f2b632;
@@ -24,6 +25,7 @@
     --text: #e3ecec;
     --muted: #8fa0a0;
     --border: #334040;
+    --door: #2a3434;
     --visited: #1f4e4b;
     --code-bg: #0c1010;
   }
@@ -168,65 +170,55 @@ button {
   background: #2e9e5b55;
 }
 
-/* ---------- Building ---------- */
+/* ---------- 3D scene ---------- */
 
-.building {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  max-height: 70vh;
-  overflow: auto;
-}
-
-.entrance {
-  padding: 0.75rem;
+.scene {
+  position: relative;
+  height: min(70vh, 640px);
+  min-height: 360px;
   border: 1px solid var(--border);
   border-radius: 0.5rem;
+  overflow: hidden;
   background: var(--surface);
 }
-.entrance h3 {
-  margin: 0 0 0.5rem;
-  font-size: 0.85rem;
-  text-align: center;
-  color: var(--muted);
+.scene canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+.scene canvas:active {
+  cursor: grabbing;
 }
 
-.floors {
-  display: grid;
-  grid-template-columns: 1.5rem repeat(var(--doors), 2.25rem);
-  gap: 0.25rem;
-}
-.floor-label {
-  display: grid;
-  place-items: center;
-  font-size: 0.7rem;
-  color: var(--muted);
-}
-
-.door {
-  display: grid;
-  place-items: center;
-  height: 2rem;
-  font-size: 0.7rem;
-  border: 1px solid var(--border);
-  border-radius: 0.25rem 0.25rem 0 0;
-  transition: background-color 150ms, transform 150ms;
-}
-.door.visited {
-  background: var(--visited);
-}
-.door.current {
+.tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
   background: var(--current);
   color: #1d2424;
-  transform: scale(1.12);
 }
-.door.found {
+.tag.found {
   background: var(--found);
-  border-color: var(--found);
   color: white;
-  font-weight: 700;
-  transform: scale(1.2);
-  box-shadow: 0 0 0 3px #2e9e5b55;
+}
+.tag.label {
+  background: none;
+  color: var(--muted);
+  font-weight: 600;
+}
+.tag.tip {
+  transform: none;
+  font-weight: 400;
+  background: var(--code-bg);
+  color: var(--code-text);
 }
 
 /* ---------- Result ---------- */
