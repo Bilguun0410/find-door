@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="mn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Find door</title>
+  </head>
+  <body>
+    <main>
+      <form id="form">
+        <fieldset>
+          <legend>Find Address</legend>
+          <span>
+            <label for="M">Нийт орц</label>
+            <input id="M" type="text" inputmode="numeric" placeholder="Enter number" value="3" />
+          </span>
+          <span>
+            <label for="O">Нийт давхар</label>
+            <input id="O" type="text" inputmode="numeric" placeholder="Enter number" value="5" />
+          </span>
+          <span>
+            <label for="K">Давхар бүрийн хаалга тоо</label>
+            <input id="K" type="text" inputmode="numeric" placeholder="Enter number" value="4" />
+          </span>
+          <span>
+            <label for="N">Хайх тоот</label>
+            <input id="N" type="text" inputmode="numeric" placeholder="Enter number" value="24" />
+          </span>
+          <button type="submit">Бодох</button>
+        </fieldset>
+      </form>
+
+      <section id="player" hidden>
+        <div class="controls">
+          <button type="button" id="playBtn">▶ Тоглуулах</button>
+          <button type="button" id="stepBtn">⏭ Алхам</button>
+          <button type="button" id="finishBtn">⏩ Дуусгах</button>
+          <button type="button" id="resetBtn">↺ Дахин</button>
+          <label class="speed">
+            Хурд
+            <input id="speed" type="range" min="1" max="20" value="6" />
+          </label>
+        </div>
+
+        <div class="stage">
+          <pre
+            class="code"
+          ><code><span data-line="outer">for (let <b>entrance</b> = 1; entrance &lt;= <i id="vM">M</i>; entrance++) {   <em id="vE">–</em></span>
+<span data-line="middle">  for (let <b>floor</b> = 1; floor &lt;= <i id="vO">O</i>; floor++) {        <em id="vF">–</em></span>
+<span data-line="inner">    for (let <b>door</b> = 1; door &lt;= <i id="vK">K</i>; door++) {        <em id="vD">–</em></span>
+<span data-line="count">      result++;                                   <em id="vR">0</em></span>
+<span data-line="check">      if (result === <i id="vN">N</i>) return;              <em id="vC"></em></span>
+    }
+  }
+}</code></pre>
+
+          <div id="building" class="building"></div>
+        </div>
+      </section>
+
+      <div id="res" role="status"></div>
+    </main>
+    <script src="index.js"></script>
+  </body>
+</html>

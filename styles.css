@@ -1,0 +1,245 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #f7f8f8;
+  --surface: #ffffff;
+  --text: #1d2424;
+  --muted: #6b7777;
+  --border: #d5dcdc;
+  --accent: teal;
+  --visited: #cfe9e7;
+  --current: #f2b632;
+  --found: #2e9e5b;
+  --error: #c0392b;
+  --code-bg: #1e2626;
+  --code-text: #d8e4e3;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121717;
+    --surface: #1b2222;
+    --text: #e3ecec;
+    --muted: #8fa0a0;
+    --border: #334040;
+    --visited: #1f4e4b;
+    --code-bg: #0c1010;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: "JetBrains Mono", monospace;
+  background: var(--bg);
+  color: var(--text);
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin-inline: auto;
+  padding: 2rem 1rem;
+}
+
+fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 692px;
+  width: 100%;
+  padding: 2rem 1.5rem 1rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  margin-inline: auto;
+  background: var(--surface);
+}
+fieldset > legend {
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+fieldset > span {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+}
+
+input,
+button {
+  font: inherit;
+  padding-inline: 1rem;
+  padding-block: 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+button {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  text-transform: uppercase;
+  font-weight: 800;
+  cursor: pointer;
+  transition: opacity 200ms ease-in-out;
+  &:hover {
+    opacity: 0.8;
+  }
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+/* ---------- Player ---------- */
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.controls button {
+  font-size: 0.8rem;
+}
+.speed {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--muted);
+  margin-inline-start: 0.5rem;
+}
+.speed input {
+  padding: 0;
+  accent-color: var(--accent);
+}
+
+.stage {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 800px) {
+  .stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.code {
+  margin: 0;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: var(--code-bg);
+  color: var(--code-text);
+  font-size: 0.8rem;
+  line-height: 1.8;
+  overflow-x: auto;
+}
+.code b {
+  color: #7fd6cf;
+  font-weight: 600;
+}
+.code i {
+  color: #f2b632;
+  font-style: normal;
+}
+.code em {
+  font-style: normal;
+  color: #9fb3b2;
+  background: #ffffff14;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+}
+.code [data-line] {
+  display: inline-block;
+  min-width: 100%;
+}
+.code .hit {
+  background: #2e9e5b55;
+}
+
+/* ---------- Building ---------- */
+
+.building {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.entrance {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+}
+.entrance h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.floors {
+  display: grid;
+  grid-template-columns: 1.5rem repeat(var(--doors), 2.25rem);
+  gap: 0.25rem;
+}
+.floor-label {
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.door {
+  display: grid;
+  place-items: center;
+  height: 2rem;
+  font-size: 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem 0.25rem 0 0;
+  transition: background-color 150ms, transform 150ms;
+}
+.door.visited {
+  background: var(--visited);
+}
+.door.current {
+  background: var(--current);
+  color: #1d2424;
+  transform: scale(1.12);
+}
+.door.found {
+  background: var(--found);
+  border-color: var(--found);
+  color: white;
+  font-weight: 700;
+  transform: scale(1.2);
+  box-shadow: 0 0 0 3px #2e9e5b55;
+}
+
+/* ---------- Result ---------- */
+
+#res {
+  text-align: center;
+  min-height: 1.5rem;
+}
+#res.success {
+  color: var(--found);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+#res.error {
+  color: var(--error);
+}
